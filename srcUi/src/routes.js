@@ -1,11 +1,19 @@
 import { HashRouter, Link, Route, Routes } from "react-router-dom";
+import CompanyViewPage from "./pages/CompanyView";
 import HomePage from "./pages/Home";
+import JobsPage from "./pages/Jobs";
+import JobsCreatePage from "./pages/Jobs/Create";
+import MyCompany from "./pages/MyCompany";
 
 export default function AppRouter() {
 	return (
 		<HashRouter>
 			<Routes>
 				<Route index element={<HomePage />} />
+				<Route path="/company/:companyId" element={<CompanyViewPage />} />
+				<Route path="/jobs" element={<JobsPage />} />
+				<Route path="/jobs/create" element={<JobsCreatePage />} />
+				<Route path="/my-company" element={<MyCompany />} />
 				
 				{/* Not found */}
 				<Route path="*" element={

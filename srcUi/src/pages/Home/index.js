@@ -16,7 +16,7 @@ export default function HomePage() {
 					avatar="https://steamuserimages-a.akamaihd.net/ugc/805425361414836245/1ED0151C55AA4B239ACA24C4F36C4DBA1DD55C04/?imw=512&imh=512&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true"
 				/>
 				<Company
-					key={1} id={1}
+					key={2} id={2}
 					name="The Emerald Bar" type="Restaurante"
 					isOpen={false}
 					avatar="https://wallpaperaccess.com/full/5749057.jpg"
