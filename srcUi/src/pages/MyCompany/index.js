@@ -111,13 +111,13 @@ export default function MyCompany() {
 						{/* Title */}
 						<h3 className="text-2xs text-center text-white/40 font-light">
 							<FontAwesomeIcon icon={faVest} className="mr-1.5" />
-							Funcionários trabalhando
+							Funcionários
 						</h3>
 
 						<div className="my-2">
 							{
 								company.workers.length === 0 ?
-									<div className="text-center text-xs text-white">Nenhum funcionário trabalhando</div> :
+									<div className="text-center text-xs text-white">Nenhum funcionário</div> :
 
 									company.workers.map((worker) => (
 										<Worker
