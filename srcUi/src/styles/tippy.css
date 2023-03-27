@@ -1,0 +1,8 @@
+.tippy-box {
+	background-color: theme("colors.dark.1");
+	color: white;
+}
+
+.tippy-arrow {
+	color: theme("colors.dark.1");
+}
