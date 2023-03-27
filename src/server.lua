@@ -72,8 +72,8 @@ end
 function src.toggleStatus(id)
 	vRP.Query("companyApp/company/toggle", { id = id })
 
-	local company = vRP.Query("companyApp/company/get", { id = id })
-	notify(-1, company.name, (company.isOpen and "Acabamos de abrir, venha nos visitar!" or "Encerramos nossas atividades por agora, voltamos em breve"))
+	local company = vRP.Query("companyApp/company/get", { id = id })[1]
+	notify(-1, company.name, (company.isOpen == 1 and "Acabamos de abrir, venha nos visitar!" or "Encerramos nossas atividades por agora, voltamos em breve"))
 
 	return { success = true }
 end
