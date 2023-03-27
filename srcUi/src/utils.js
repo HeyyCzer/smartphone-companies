@@ -11,6 +11,14 @@ const getResourceName = () => {
 	return "companies-app";
 };
 
+export function processRequest(action, data) {
+	if (!action)
+		return debug("Unknown action requested!");
+
+	debug("Dispatched event:", color(action, "blue"), JSON.stringify(data));
+	eventEmitter.emit(action, data);
+}
+
 const axiosInstance = axios.create({
 	baseURL: `https://${getResourceName()}/`,
 	timeout: 5000,
@@ -18,6 +26,8 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
 	(request) => {
+		debug("Making request:", color(request.url, "blue"), JSON.stringify(request.data || {}));
+
 		if (isDevEnv()) {
 			return {
 				cancelToken: new axios.CancelToken((cancel) => cancel("Ambiente de desenvolvimento detectado. Request cancelado.")),
@@ -26,7 +36,21 @@ axiosInstance.interceptors.request.use(
 
 		return request;
 	},
-	(error) => Promise.reject(error),
+	(err) => {
+		error(`${err.message}:`, color(err.config.url, "red"), err.config.data);
+		return Promise.reject(err)
+	},
+);
+
+axiosInstance.interceptors.response.use(
+	(response) => {
+		debug("Request response:", color(response.config.url, "blue"), JSON.stringify(response.data));
+		return response;
+	},
+	(err) => {
+		error(`${err.message}:`, color(err.config?.url, "red"), err.config?.data);
+		return Promise.reject(err);
+	},
 );
 
 export { eventEmitter, axiosInstance };
@@ -37,10 +61,6 @@ export const Modal = Swal.mixin({
 });
 	
 let debugEnabled = false;
-export function setDebugEnabled(status) {
-	debugEnabled = status;
-	warn("Debug status setted to", color(status, "yellow"));
-}
 
 export const debug = (...message) => {
 	if (isDevEnv() || debugEnabled) console.info(color("[DEBUG]", "blue"), ...message);

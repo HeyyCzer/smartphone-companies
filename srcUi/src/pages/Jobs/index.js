@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Job from "../../components/Job";
 import App from "../../components/_app";
-import { axiosInstance, isDevEnv } from "../../utils";
+import { axiosInstance, eventEmitter, isDevEnv } from "../../utils";
 import LoadingPage from "../_Loading";
 
 export default function JobsPage() {
@@ -30,11 +30,20 @@ export default function JobsPage() {
 	]);
 
 	useEffect(() => {
-		axiosInstance.post("/getJobs")
-			.then(({ data }) => {
-				setLoading(false);
-				setJobs(data);
-			});
+		const refreshJobs = () => {
+			setLoading(!isDevEnv());
+			axiosInstance.post("/getJobs")
+				.then(({ data }) => {
+					setJobs(data);
+					setLoading(false);
+				});
+		}
+		refreshJobs();
+		eventEmitter.on("refreshJobs", refreshJobs);
+		
+		return () => {
+			eventEmitter.off("refreshJobs");
+		}
 	}, []);
 
 	if (loading)

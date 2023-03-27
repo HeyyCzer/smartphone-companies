@@ -6,7 +6,6 @@ src = {}
 Tunnel.bindInterface(GetCurrentResourceName(), src)
 vSERVER = Tunnel.getInterface(GetCurrentResourceName())
 
-
 -- ? Home page
 RegisterNUICallback("getCompanies", function(data, callback)
 	callback(vSERVER.getCompanies())
@@ -14,6 +13,13 @@ end)
 
 RegisterNUICallback("markLocation", function(data, callback)
 	local location = vSERVER.getLocation(data.id)
+
+	print(json.encode(location))
+
+	TriggerEvent("Notify", "sucesso", "Localização marcada em seu GPS")
+
+	SetNewWaypoint(location[1], location[2])
+
 	callback({ success = true })
 end)
 
@@ -30,6 +36,10 @@ RegisterNUICallback("deleteAnnounce", function(data, callback)
 	callback(vSERVER.deleteAnnounce(data.id))
 end)
 
+RegisterNUICallback("toggleStatus", function(data, callback)
+	callback(vSERVER.toggleStatus(data.id))
+end)
+
 -- ? Jobs
 RegisterNUICallback("getJobs", function(data, callback)
 	callback(vSERVER.getJobs())
@@ -44,15 +54,19 @@ RegisterNUICallback("createJob", function(data, callback)
 	callback(vSERVER.createJob(data.description, data.image))
 end)
 
+RegisterNUICallback("deleteJob", function(data, callback)
+	callback(vSERVER.deleteJob(data.id))
+end)
+
 -- ? My Company
 RegisterNUICallback("getMyCompany", function(data, callback)
 	callback(vSERVER.getMyCompany())
 end)
 
 RegisterNUICallback("withdrawMoney", function(data, callback)
-	callback(vSERVER.withdrawMoney(data.value))
+	callback(vSERVER.withdrawMoney(tonumber(data.value)))
 end)
 
 RegisterNUICallback("depositMoney", function(data, callback)
-	callback(vSERVER.depositMoneyy(data.value))
+	callback(vSERVER.depositMoney(tonumber(data.value)))
 end)

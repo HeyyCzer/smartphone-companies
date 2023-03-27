@@ -28,6 +28,7 @@ export default function JobsCreatePage() {
 						placeholder="Quem você está contratando? Do que você precisa? Dê uma descrição detalhada!"
 						minRows={6}
 						maxLength={1000}
+						autoFocus
 						className="px-2 pt-2 pb-6 bg-dark-1 focus:outline-none resize-none w-full rounded-lg"
 						{...register("description", { required: true })}
 					/>

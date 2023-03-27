@@ -1,11 +1,11 @@
-import { faClock, faMessage } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faMessage, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tippy from "@tippyjs/react";
 import moment from "moment";
 import { useState } from "react";
-import { axiosInstance } from "../../utils";
+import { axiosInstance, eventEmitter } from "../../utils";
 
-export default function Job({ id, author, phone, description, createdAt, canRemove }) {
+export default function Job({ id, author, phone, description, createdAt, canDelete }) {
 	const [collapsed, setCollapsed] = useState(description.length > 200);
 
 	const getFormattedDate = () => {
@@ -23,13 +23,20 @@ export default function Job({ id, author, phone, description, createdAt, canRemo
 		setCollapsed(!collapsed);
 	}
 
+	const deleteJob = () => {
+		axiosInstance.post("/deleteJob", { id })
+			.then(() => {
+				eventEmitter.emit("refreshJobs");
+			});
+	}
+
 	return (
 		<div className="animate__animated animate__slideInLeft bg-dark-3 rounded-lg flex my-2">
 			<div className="my-2 mx-3 flex flex-col w-full">
 				<span className="text-[0.5rem] text-gray-500">
 					<Tippy content={ moment(new Date(createdAt)).calendar() } className="text-xs" offset={[0, 5]}>
 						<span>
-							<FontAwesomeIcon icon={faClock} className="mr-1" /> {getFormattedDate()}
+							<FontAwesomeIcon icon={faClock} className="mr-1" /> { getFormattedDate() }
 						</span>
 					</Tippy>
 				</span>
@@ -45,10 +52,17 @@ export default function Job({ id, author, phone, description, createdAt, canRemo
 				</div>
 
 				{/* Send message */}
-				<button type="button" className="mt-2 bg-dark-5 hover:bg-primary hover:text-white transition-colors rounded-lg text-[10px] text-white/80 w-full py-0.5" onClick={openWhatsapp}>
-					<FontAwesomeIcon icon={faMessage} className="mr-2" />
-					{ phone }
-				</button>
+				<div className="flex mt-2 text-white/80 w-full">
+					<button type="button" className="bg-dark-5 hover:bg-primary hover:text-white transition-colors rounded-lg text-[10px] text-white/80 w-full py-0.5" onClick={openWhatsapp}>
+						<FontAwesomeIcon icon={faMessage} className="mr-2" />
+						{ phone }
+					</button>
+					{canDelete &&
+						<button type="button" className="ml-1 bg-red-600/50 hover:bg-red-600 hover:text-white transition-colors rounded-lg text-[10px] text-white/80 w-1/6 py-0.5" onClick={deleteJob}>
+							<FontAwesomeIcon icon={faTrash} />
+						</button>
+					}
+				</div>
 			</div>
 		</div>
 	)

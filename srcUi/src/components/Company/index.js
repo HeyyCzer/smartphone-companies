@@ -4,12 +4,18 @@ import { Link } from "react-router-dom";
 import { axiosInstance } from "../../utils";
 
 export default function Company({ id, name, type, avatar, isOpen }) {
-	const markLocation = () => {
+	const checkClick = (e) => {
+		if(e.target.tagName === "button")
+			e.preventDefault()
+	}
+
+	const markLocation = (e) => {
+		e.preventDefault();
 		axiosInstance.post("/markLocation", { id });
 	}
 
 	return (
-		<Link to={`/company/${id}`} className="animate__animated animate__slideInLeft bg-dark-3 rounded-lg flex my-2">
+		<Link to={`/company/${id}`} className="animate__animated animate__slideInLeft bg-dark-3 rounded-lg flex my-2" onClick={checkClick}>
 			<div>
 				<div className="h-20 w-20 rounded-lg bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${avatar})` }} />
 			</div>

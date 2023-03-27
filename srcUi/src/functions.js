@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -5,18 +6,15 @@ export default function FunctionsComponent() {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		const previousPage = (e) => {
-			if (e.key !== "Backspace") return;
-	
-			const onInput = (document.querySelectorAll("input:focus").length > 0 || document.querySelectorAll("textarea:focus").length > 0)
-			if (onInput) return;
-	
-			navigate(-1);
+		const onKeyDown = ({ key }) => {
+			if (key === 'Backspace' || key === 'Escape') {
+				axios.post("http://smartphone/keydown", { key });
+			}
 		}
-		window.addEventListener("keydown", previousPage);
+		window.addEventListener("keydown", onKeyDown);
 
 		return () => {
-			window.removeEventListener("keydown", previousPage);
+			window.removeEventListener("keydown", onKeyDown);
 		}
 	}, [ navigate ]);
 }

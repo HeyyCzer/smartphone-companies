@@ -7,14 +7,33 @@ src = {}
 Tunnel.bindInterface(GetCurrentResourceName(), src)
 vCLIENT = Tunnel.getInterface(GetCurrentResourceName())
 
+local Internal = {}
+
+vRP.Prepare("companyApp/company/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies` (`id` INT(11) NOT NULL AUTO_INCREMENT,`name` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',`type` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',`avatar` TEXT NOT NULL COLLATE 'latin1_swedish_ci',`permission` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',`location` LONGTEXT NOT NULL COLLATE 'utf8mb4_bin',`isOpen` TINYINT NOT NULL COLLATE 'latin1_swedish_ci',PRIMARY KEY (`id`) USING BTREE,CONSTRAINT `location` CHECK (json_valid(`location`)));")
+vRP.Prepare("companyApp/announces/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies_announces` (`id` INT(11) NOT NULL AUTO_INCREMENT,`companyId` INT(11) NOT NULL,`authorID` INT(11) NOT NULL,`message` TEXT NOT NULL COLLATE 'latin1_swedish_ci',`image` TEXT NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',`createdAt` TIMESTAMP NOT NULL DEFAULT current_timestamp(),PRIMARY KEY (`id`) USING BTREE)")
+vRP.Prepare("companyApp/jobs/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies_jobs` (`id` INT(11) NOT NULL AUTO_INCREMENT,`authorID` INT(11) NOT NULL,`description` TEXT NOT NULL COLLATE 'latin1_swedish_ci',`image` TEXT NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',`createdAt` TIMESTAMP NOT NULL DEFAULT current_timestamp(),PRIMARY KEY (`id`) USING BTREE)")
+vRP.Prepare("companyApp/bank/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies_banklogs` (`id` INT(11) NOT NULL AUTO_INCREMENT,`companyId` INT(11) NOT NULL,`authorID` INT(11) NOT NULL,`action` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',`value` INT(11) NOT NULL,`date` TIMESTAMP NOT NULL DEFAULT current_timestamp(),PRIMARY KEY (`id`) USING BTREE)")
+
 vRP.Prepare("companyApp/company/getAll", "SELECT * FROM heyy_companies")
 vRP.Prepare("companyApp/company/get", "SELECT * FROM heyy_companies WHERE id = @id")
-vRP.Prepare("companyApp/announces/get", "SELECT * FROM heyy_companies_announces WHERE companyId = @companyId")
+vRP.Prepare("companyApp/company/toggle", "UPDATE heyy_companies SET isOpen = NOT isOpen WHERE id = @id")
+vRP.Prepare("companyApp/announces/get", "SELECT * FROM heyy_companies_announces WHERE companyId = @companyId ORDER BY createdAt DESC")
 vRP.Prepare("companyApp/announces/new", "INSERT INTO heyy_companies_announces (companyId, authorID, message, image) VALUES (@companyId, @authorID, @message, @image)")
 vRP.Prepare("companyApp/announces/delete", "DELETE FROM heyy_companies_announces WHERE id = @id")
-vRP.Prepare("companyApp/jobs/get", "SELECT * FROM heyy_companies_jobs")
+vRP.Prepare("companyApp/jobs/get", "SELECT * FROM heyy_companies_jobs ORDER BY createdAt DESC")
 vRP.Prepare("companyApp/jobs/new", "INSERT INTO heyy_companies_jobs (authorID, description, image) VALUES (@authorID, @description, @image)")
-vRP.Prepare("companyApp/company/getLogs", "SELECT * FROM heyy_companies_banklogs WHERE companyId = @companyId")
+vRP.Prepare("companyApp/jobs/delete", "DELETE FROM heyy_companies_jobs WHERE id = @id")
+vRP.Prepare("companyApp/bank/getLogs", "SELECT * FROM heyy_companies_banklogs WHERE companyId = @companyId ORDER BY date DESC LIMIT 25")
+vRP.Prepare("companyApp/bank/newLog", "INSERT INTO heyy_companies_banklogs (companyId, authorID, action, amount) VALUES (@companyId, @authorID, @action, @amount)")
+
+Citizen.CreateThread(function()
+	Wait(1000)
+
+	vRP.Query("companyApp/company/setup")
+	vRP.Query("companyApp/announces/setup")
+	vRP.Query("companyApp/jobs/setup")
+	vRP.Query("companyApp/bank/setup")
+end)
 
 function src.getCompanies()
 	local companies = vRP.Query("companyApp/company/getAll", {})
@@ -22,7 +41,7 @@ function src.getCompanies()
 end
 
 function src.getLocation(id)
-	local company = vRP.Query("companyApp/company/get", { id = id })
+	local company = vRP.Query("companyApp/company/get", { id = id })[1]
 	return json.decode(company.location)
 end
 
@@ -30,17 +49,38 @@ end
 function src.getCompany(id)
 	local user_id = vRP.Passport(source)
 
+	local company = vRP.Query("companyApp/company/get", { id = id })[1]
+	local announces = vRP.Query("companyApp/announces/get", { companyId = id })
+	for k, v in ipairs(announces) do
+		v.author = Internal.getUserName(v.authorID)
+	end
+
+	local canEdit = vRP.HasGroup(user_id, company.permission)
+	return {
+		company = {
+			name = company.name,
+			type = company.type,
+			avatar = company.avatar,
+			isOpen = company.isOpen,
+			
+			canEdit = canEdit,
+		},
+		announces = announces
+	}
+end
+
+function src.toggleStatus(id)
+	vRP.Query("companyApp/company/toggle", { id = id })
+
 	local company = vRP.Query("companyApp/company/get", { id = id })
 
-	local canEdit = vRP.HasGroup(user_id, v.permission)
-	return {
-		name = company.name,
-		type = company.type,
-		avatar = company.avatar,
-		isOpen = company.isOpen,
-		
-		canEdit = canEdit,
-	}
+	TriggerClientEvent("smartphone:pusher", target, "CUSTOM_NOTIFY", {
+		app = "companies",
+		title = company.name,
+		subtitle = (company.isOpen and "Acabamos de abrir, venha nos visitar!" or "Encerramos nossas atividades por agora, voltamos em breve")
+	})
+
+	return { success = true }
 end
 
 function src.createAnnounce(companyId, message, image)
@@ -58,9 +98,14 @@ end
 
 -- Jobs
 function src.getJobs()
+	local user_id = vRP.Passport(source)
+	
 	local jobs = vRP.Query("companyApp/jobs/get", {})
 	for k, v in ipairs(jobs) do
-		v.author = Internal.getUserName(v.authorID)
+		local identity = vRP.Identity(v.authorID)
+		v.author = identity.name .. " " .. identity.name2
+		v.phone = identity.phone
+		v.canDelete = (user_id == v.authorID)
 	end
 	return jobs
 end
@@ -74,6 +119,11 @@ function src.createJob(description, image)
 	return { success = true }
 end
 
+function src.deleteJob(id)
+	vRP.Query("companyApp/jobs/delete", { id = id })
+	return { success = true }
+end
+
 -- My Company
 function src.getMyCompany()
 	local user_id = vRP.Passport(source)
@@ -83,13 +133,13 @@ function src.getMyCompany()
 		return { unauthorized = true }
 	end
 
-	local bankLogs = vRP.Query("companyApp/company/getLogs", { companyId = company.id })
+	local bankLogs = vRP.Query("companyApp/bank/getLogs", { companyId = company.id })
 	-- author, action, amount, date
 	for _, v in ipairs(bankLogs) do
 		v.author = Internal.getUserName(v.authorID)
 	end
 
-	local workerList = vRP.DataGroup(company.permission)
+	local workerList = vRP.DataGroups(company.permission)
 	local workers = {}
 	-- id, name, status
 	for pID, hierarchy in pairs(workerList) do
@@ -115,14 +165,14 @@ function src.getMyCompany()
 	end)
 
 	return {
-		balance = company.balance, -- TODO: Get data of the right table
+		balance = exports.tabletshops:getBalance(company.permission),
 		workers = workers,
 		bankLogs = bankLogs
 	}
 end
 
 function Internal.getUserCompany(user_id)
-	local results = vRP.Query("companyApp/getCompanies", {})
+	local results = vRP.Query("companyApp/company/getAll", {})
 	for k, v in ipairs(results) do
 		if vRP.HasGroup(user_id, v.permission, 1) then
 			return v
@@ -135,18 +185,42 @@ function src.withdrawMoney(value)
 	local user_id = vRP.Passport(source)
 	local company = Internal.getUserCompany(user_id)
 	if not company then
-		return { failed = true }
+		return false
 	end
-	return exports.tabletshops:withdrawMoney(user_id, company.id, value)
+
+	if exports.tabletshops:withdraw(user_id, company.permission, value) then
+		vRP.Query("companyApp/bank/newLog", { companyId = company.id, authorID = user_id, action = "withdraw", amount = value })
+
+		local name = Internal.getUserName(user_id)
+		for nuser_id, player in pairs(vRP.NumPermission(company.permission)) do
+			if vRP.HasGroup(nuser_id, company.permission, 1) then
+				notify(player, company.name .. " - Financeiro", "<b>" .. name .. "</b> sacou <b>$" .. value .. "</b>")
+			end
+		end
+		return { success = true }
+	end
+	return false
 end
 
 function src.depositMoney(value)
 	local user_id = vRP.Passport(source)
 	local company = Internal.getUserCompany(user_id)
 	if not company then
-		return { failed = true }
+		return false
 	end
-	return exports.tabletshops:depositMoney(user_id, company.id, value)
+
+	if exports.tabletshops:deposit(user_id, company.permission, value) then
+		vRP.Query("companyApp/bank/newLog", { companyId = company.id, authorID = user_id, action = "deposit", amount = value })
+		
+		local name = Internal.getUserName(user_id)
+		for nuser_id, player in pairs(vRP.NumPermission(company.permission)) do
+			if vRP.HasGroup(nuser_id, company.permission, 1) then
+				notify(player, company.name .. " - Financeiro", "<b>" .. name .. "</b> depositou <b>$" .. value .. "</b>")
+			end
+		end
+		return true
+	end
+	return false
 end
 
 -- Utils

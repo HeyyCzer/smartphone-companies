@@ -1,4 +1,4 @@
-import { faCheck, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faClock, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tippy from "@tippyjs/react";
 import moment from "moment";
@@ -24,6 +24,11 @@ export default function AnnounceMessage({ id, author, createdAt, message, image,
 		});
 	}
 
+	const getFormattedDate = () => {
+		const formatted = date.fromNow();
+		return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+	}
+
 	return (
 		<div className="py-3 text-xs">
 			{/* Author & Time */}
@@ -35,10 +40,6 @@ export default function AnnounceMessage({ id, author, createdAt, message, image,
 					</Tippy>
 				</span>
 
-				<Tippy content={date.calendar()} className="text-2xs" offset={[0, 5]}>
-					<span className="text-white/40 text-2xs font-light">{date.fromNow()}</span>
-				</Tippy>
-
 				{
 					canDelete &&
 						<button type="button" onClick={deleteAnnounce} className="ml-auto mr-0 text-2xs text-red-600">
@@ -46,9 +47,17 @@ export default function AnnounceMessage({ id, author, createdAt, message, image,
 						</button>
 				}
 			</div>
+			<div className="mb-1 text-2xs">
+				<Tippy content={date.calendar()} offset={[0, 5]}>
+					<span className="text-white/40 text-2xs font-light">
+						<FontAwesomeIcon icon={faClock} className="mr-1" />	
+						{ getFormattedDate() }
+					</span>
+				</Tippy>
+			</div>
 
 			{/* Message */}
-			<div className="text-white/90 font-light text-xs text-justify whitespace-pre-wrap">
+			<div className="text-white/80 font-light text-xs text-justify whitespace-pre-wrap">
 				{ message }
 			</div>
 
