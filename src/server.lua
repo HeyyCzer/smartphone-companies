@@ -20,7 +20,8 @@ vRP.Prepare("companyApp/company/toggle", "UPDATE heyy_companies SET isOpen = NOT
 vRP.Prepare("companyApp/announces/get", "SELECT * FROM heyy_companies_announces WHERE companyId = @companyId ORDER BY createdAt DESC")
 vRP.Prepare("companyApp/announces/new", "INSERT INTO heyy_companies_announces (companyId, authorID, message, image) VALUES (@companyId, @authorID, @message, @image)")
 vRP.Prepare("companyApp/announces/delete", "DELETE FROM heyy_companies_announces WHERE id = @id")
-vRP.Prepare("companyApp/jobs/get", "SELECT * FROM heyy_companies_jobs ORDER BY createdAt DESC")
+vRP.Prepare("companyApp/jobs/get", "SELECT * FROM heyy_companies_jobs WHERE createdAt >= DATE(NOW() - INTERVAL 2 DAY) ORDER BY createdAt DESC")
+vRP.Prepare("companyApp/jobs/contains", "SELECT * FROM heyy_companies_jobs WHERE authorID = @authorID AND createdAt >= DATE(NOW() - INTERVAL 2 DAY)")
 vRP.Prepare("companyApp/jobs/new", "INSERT INTO heyy_companies_jobs (authorID, description, image) VALUES (@authorID, @description, @image)")
 vRP.Prepare("companyApp/jobs/delete", "DELETE FROM heyy_companies_jobs WHERE id = @id")
 vRP.Prepare("companyApp/bank/getLogs", "SELECT * FROM heyy_companies_banklogs WHERE companyId = @companyId ORDER BY date DESC LIMIT 25")
@@ -108,10 +109,13 @@ end
 function src.createJob(description, image)
 	local user_id = vRP.Passport(source)
 
-	vRP.Query("companyApp/jobs/new", { authorID = user_id, description = description, image = image })
-	notify(-1, "Empresas", "Uma nova vaga de emprego está disponível")
-
-	return { success = true }
+	local results = vRP.Query("companyApp/jobs/contains", { authorID = user_id })
+	if #results <= 0 then
+		vRP.Query("companyApp/jobs/new", { authorID = user_id, description = description, image = image })
+		notify(-1, "Empresas", "Uma nova vaga de emprego está disponível")
+		return { success = true }
+	end
+	return { failed = "Você já possui uma <span class=\"text-primary\">vaga de emprego</span> anunciada! Exclua-a ou aguarde sua data de expiração para publicar outra." }
 end
 
 function src.deleteJob(id)
