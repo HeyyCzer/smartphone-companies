@@ -100,7 +100,7 @@ export default function CompanyViewPage() {
 				</section>
 				
 				{/* Announces */}
-				<section className="animate__animated animate__backInLeft bg-dark-3 my-4 mx-auto w-4/5 px-3.5 pt-2 pb-4 rounded-lg">
+				<section className="animate__animated animate__backInLeft bg-dark-3 my-4 mx-3 px-3.5 pt-2 pb-4 rounded-lg">
 					{/* Title */}
 					<h3 className="text-2xs text-center text-white/40 font-light">
 						<FontAwesomeIcon icon={faBell} className="mr-1.5" />

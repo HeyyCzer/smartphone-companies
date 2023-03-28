@@ -39,12 +39,12 @@ export default function HomePage() {
 			<div className="mx-3">
 				<div className="mb-4 text-center text-2xs text-white/60">
 					Filtrar por
-					<div className={"grid grid-cols-3 bg-gray-500 rounded-lg"}>
+					<div className={"grid grid-cols-3 bg-gray-500 rounded-lg text-xs"}>
 						{filters.map(filter => (
 							<button
 								key={filter}
 								type="button"
-								className={`transition-colors ${currentFilter === filter ? "bg-primary text-white" : "hover:bg-primary/60"} first:rounded-l-lg last:rounded-r-lg`}
+								className={`py-1 transition-colors ${currentFilter === filter ? "bg-primary text-white" : "hover:bg-primary/60"} first:rounded-l-lg last:rounded-r-lg`}
 								onClick={() => setCurrentFilter(filter === currentFilter ? null : filter)}
 							>
 								{filter}
