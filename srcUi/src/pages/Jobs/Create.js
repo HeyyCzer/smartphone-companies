@@ -3,7 +3,7 @@ import App from "../../components/_app";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import TextareaAutosize from 'react-textarea-autosize';
-import { axiosInstance } from "../../utils";
+import { axiosInstance, Modal } from "../../utils";
 
 export default function JobsCreatePage() {
 	const { register, handleSubmit, watch } = useForm();
@@ -12,7 +12,16 @@ export default function JobsCreatePage() {
 
 	const createJob = ({ description, image }) => {
 		axiosInstance.post("/createJob", { description, image })
-			.then(() => {
+			.then(({ data }) => {
+				if (data.failed) {
+					Modal.fire({
+						icon: "error",
+						html: data.failed,
+			
+						confirmButtonText: "Fechar",
+					});
+				}
+
 				navigate("/jobs");
 			})
 	}

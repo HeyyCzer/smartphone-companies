@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tippy from "@tippyjs/react";
 import moment from "moment";
 import { useState } from "react";
-import { axiosInstance, eventEmitter } from "../../utils";
+import { axiosInstance, eventEmitter, Modal } from "../../utils";
 
 export default function Job({ id, author, phone, description, createdAt, canDelete }) {
 	const [collapsed, setCollapsed] = useState(description.length > 200);
@@ -24,10 +24,20 @@ export default function Job({ id, author, phone, description, createdAt, canDele
 	}
 
 	const deleteJob = () => {
-		axiosInstance.post("/deleteJob", { id })
-			.then(() => {
-				eventEmitter.emit("refreshJobs");
-			});
+		Modal.fire({
+			html: `Deseja realmente <span class="text-primary">excluir</span> esta publicação?`,
+			footer: `<span class="text-xs">Esta ação não poderá ser revertida</span>`,
+
+			confirmButtonText: "Excluir",
+			showCancelButton: true,
+		}).then(({ isConfirmed }) => {
+			if (!isConfirmed) return;
+
+			axiosInstance.post("/deleteJob", { id })
+				.then(() => {
+					eventEmitter.emit("refreshJobs");
+				});
+		});
 	}
 
 	return (
@@ -53,14 +63,16 @@ export default function Job({ id, author, phone, description, createdAt, canDele
 
 				{/* Send message */}
 				<div className="flex mt-2 text-white/80 w-full">
-					<button type="button" className="bg-dark-5 hover:bg-primary hover:text-white transition-colors rounded-lg text-[10px] text-white/80 w-full py-0.5" onClick={openWhatsapp}>
-						<FontAwesomeIcon icon={faMessage} className="mr-2" />
-						{ phone }
-					</button>
-					{canDelete &&
-						<button type="button" className="ml-1 bg-red-600/50 hover:bg-red-600 hover:text-white transition-colors rounded-lg text-[10px] text-white/80 w-1/6 py-0.5" onClick={deleteJob}>
-							<FontAwesomeIcon icon={faTrash} />
-						</button>
+					{
+						canDelete ?
+							<button type="button" className="bg-red-600/50 hover:bg-red-600 hover:text-white transition-colors rounded-lg text-[10px] text-white/80 w-full py-0.5" onClick={deleteJob}>
+								<FontAwesomeIcon icon={faTrash} />
+							</button>
+							:
+							<button type="button" className="bg-dark-5 hover:bg-primary hover:text-white transition-colors rounded-lg text-[10px] text-white/80 w-full py-0.5" onClick={openWhatsapp}>
+								<FontAwesomeIcon icon={faMessage} className="mr-2" />
+								{ phone }
+							</button>
 					}
 				</div>
 			</div>
