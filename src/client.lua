@@ -14,10 +14,7 @@ end)
 RegisterNUICallback("markLocation", function(data, callback)
 	local location = vSERVER.getLocation(data.id)
 
-	print(json.encode(location))
-
 	TriggerEvent("Notify", "sucesso", "Localização marcada em seu GPS")
-
 	SetNewWaypoint(location[1], location[2])
 
 	callback({ success = true })
