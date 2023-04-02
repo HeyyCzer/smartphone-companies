@@ -13,10 +13,16 @@ body,
 
 body {
 	font-family: "Inter", sans-serif;
-	background: theme("colors.dark.5");
 	user-select: none;
+	background: theme("colors.gray.300");
+	color: theme("colors.black");
 	overflow: auto;
 	scroll-behavior: smooth;
+}
+
+.dark body {
+	background: theme("colors.dark.5");
+	color: theme("colors.white");
 }
 
 *::-webkit-scrollbar {

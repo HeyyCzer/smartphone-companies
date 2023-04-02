@@ -12,12 +12,12 @@ export default function Worker({ id, name, status }) {
 
 	return (
 		<div className="py-0.5">
-			<div className="text-white/80 text-xs">
+			<div className="text-gray-400 dark:text-white/80 text-xs">
 				<span className="flex">
 					<Tippy content={status[0]} className="text-xs" offset={[0, 5]}>
 						<FontAwesomeIcon className={`my-auto mr-2 ${status[1]}`} icon={faCircle} fontSize={4} />
 					</Tippy>
-					<span className="mr-2 text-gray-500">#{id}</span> {name}
+					<span className="mr-2 text-black dark:text-gray-500">#{id}</span> {name}
 				</span>
 			</div>
 		</div>

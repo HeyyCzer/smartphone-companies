@@ -12,7 +12,7 @@ export default function BankAction({ author, action, amount, date }) {
 		<div className="border-b border-black/10 py-2">
 			<div>
 				<Tippy content={date.calendar()} className="text-xs" offset={[0, 5]}>
-					<span className="text-sm font-light text-white/60"><span className="font-semibold text-white">{author}</span> {date.fromNow()}</span>
+					<span className="text-xs font-light text-black/60 dark:text-white/60"><span className="font-semibold text-black dark:text-white">{author}</span> {date.fromNow()}</span>
 				</Tippy>
 			</div>
 			<div className="text-xs">

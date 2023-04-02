@@ -75,15 +75,15 @@ export default function CompanyViewPage() {
 		<App>
 			{/* Title */}
 			<div className="py-4 text-center">
-				<h5 className="text-2xs text-white/40 -mb-0.5">{ company.type }</h5>
-				<h1 className="text-xs text-white/70">{ company.name }</h1>
+				<h5 className="text-2xs text-black/50 dark:text-white/40 -mb-0.5">{ company.type }</h5>
+				<h1 className="text-xs text-black/70 dark:text-white/70">{ company.name }</h1>
 			</div>
 
 			<div className="pt-5">
 				{/* Presentation */}
 				<section className="text-center">
 					<div className="mx-auto h-32 w-32 rounded-lg bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${company.avatar})` }} />
-					<h1 className="mt-2 text-center text-white font-semibold">{company.name}</h1>
+					<h1 className="mt-2 text-center font-semibold">{company.name}</h1>
 					
 					{
 						company.canEdit ?
@@ -100,9 +100,9 @@ export default function CompanyViewPage() {
 				</section>
 				
 				{/* Announces */}
-				<section className="animate__animated animate__backInLeft bg-dark-3 my-4 mx-3 px-3.5 pt-2 pb-4 rounded-lg">
+				<section className="animate__animated animate__backInLeft bg-gray-100 dark:bg-dark-3 my-4 mx-3 px-3.5 pt-2 pb-4 rounded-lg">
 					{/* Title */}
-					<h3 className="text-2xs text-center text-white/40 font-light">
+					<h3 className="text-2xs text-center text-black/50 dark:text-white/40 font-light">
 						<FontAwesomeIcon icon={faBell} className="mr-1.5" />
 						Anúncios
 					</h3>
@@ -118,18 +118,18 @@ export default function CompanyViewPage() {
 					{/* List */}
 					<div>
 						{creatingAnnounce &&
-							<form className="flex flex-col my-2 text-2xs text-gray-300" onSubmit={handleSubmit(createAnnounce)}>
+							<form className="flex flex-col my-2 text-2xs text-gray-900 dark:text-gray-300" onSubmit={handleSubmit(createAnnounce)}>
 								<TextareaAutosize
 									placeholder="Escreva o anúncio aqui"
 									minRows={3}
 									autoFocus
-									className="px-2 py-2 bg-dark-1 focus:outline-none resize-none w-full rounded-lg"
+									className="px-2 py-2 bg-gray-200 dark:bg-dark-1 focus:outline-none resize-none w-full rounded-lg"
 									{...register("message", { required: true })}
 								/>
 
 								<input
 									placeholder="URL da imagem (opcional)"
-									className="px-2 py-2 bg-dark-1 focus:outline-none rounded-lg mt-1"
+									className="px-2 py-2 bg-gray-200 dark:bg-dark-1 focus:outline-none rounded-lg mt-1"
 									{...register("image")}
 								/>
 							
@@ -139,7 +139,7 @@ export default function CompanyViewPage() {
 
 						{
 							!creatingAnnounce && announces.length === 0 ?
-								<div className="text-center text-xs text-white">Nenhum anúncio</div> :
+								<div className="text-center text-xs">Nenhum anúncio</div> :
 								
 								announces.map((announce, index) => (
 									<AnnounceMessage

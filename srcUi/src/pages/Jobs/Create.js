@@ -29,7 +29,7 @@ export default function JobsCreatePage() {
 	return (
 		<App>
 			{/* Title */}
-			<h1 className="text-xs text-white/70 py-4 text-center">Anunciar vaga</h1>
+			<h1 className="text-xs text-black/70 dark:text-white/70 py-4 text-center">Anunciar vaga</h1>
 
 			<form className="flex flex-col mx-3 my-2 text-2xs text-gray-300" onSubmit={handleSubmit(createJob)}>
 				<div className="relative">
@@ -38,7 +38,7 @@ export default function JobsCreatePage() {
 						minRows={6}
 						maxLength={1000}
 						autoFocus
-						className="px-2 pt-2 pb-6 bg-dark-1 focus:outline-none resize-none w-full rounded-lg"
+						className="px-2 pt-2 pb-6 bg-gray-200 dark:bg-dark-1 focus:outline-none resize-none w-full rounded-lg"
 						{...register("description", { required: true })}
 					/>
 					<p className="absolute bottom-2 right-2 text-gray-500">{ 1000 - (watch("description")?.length || 0) }</p>
@@ -46,7 +46,7 @@ export default function JobsCreatePage() {
 
 				<input
 					placeholder="URL da imagem (opcional)"
-					className="px-2 py-2 bg-dark-1 focus:outline-none rounded-lg mt-1"
+					className="px-2 py-2 bg-gray-200 dark:bg-dark-1 focus:outline-none rounded-lg mt-1"
 					{...register("image")}
 				/>
 			

@@ -16,7 +16,8 @@ export default function JobsPage() {
 			author: "Jotta",
 			phone: "123-456",
 			description: "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back.\n\nIf he lifted his head a little he could see his brown belly, slightly domed and divided by arches into stiff sections. The bedding was hardly able to cover it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest of him, waved about helplessly as he looked.", // 200 char collapsed
-			canDelete: false,
+			isAuthor: false,
+			isAdmin: true,
 			createdAt: moment().subtract(1, "hour").toDate().getTime(),
 		},
 		{
@@ -24,7 +25,8 @@ export default function JobsPage() {
 			author: "HeyyCzer",
 			phone: "654-321",
 			description: "Just a simple job!", // 200 char collapsed
-			canDelete: true,
+			isAuthor: true,
+			isAdmin: true,
 			createdAt: moment().subtract(1, "days").toDate().getTime(),
 		},
 	]);
@@ -52,7 +54,7 @@ export default function JobsPage() {
 	return (
 		<App>
 			{/* Title */}
-			<h1 className="text-xs text-white/70 py-4 text-center">Vagas de Emprego</h1>
+			<h1 className="text-xs text-black/70 dark:text-white/70 py-4 text-center">Vagas de Emprego</h1>
 
 			{/* Jobs */}
 			<div className="mx-3">
@@ -64,7 +66,8 @@ export default function JobsPage() {
 							phone={job.phone}
 							description={job.description}
 							createdAt={job.createdAt}
-							canDelete={job.canDelete}
+							isAuthor={job.isAuthor}
+							canDelete={job.isAdmin || job.isAuthor}
 						/>
 					))
 				}

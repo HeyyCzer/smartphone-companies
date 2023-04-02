@@ -33,7 +33,7 @@ export default function AnnounceMessage({ id, author, createdAt, message, image,
 		<div className="py-3 text-xs">
 			{/* Author & Time */}
 			<div className="flex">
-				<span className="text-white mr-1.5">
+				<span className="mr-1.5">
 					{ author }
 					<Tippy content="Funcionário" className="text-2xs" offset={[0, 5]}>
 						<FontAwesomeIcon icon={faCheck} className="ml-1 text-2xs text-primary" />
@@ -49,7 +49,7 @@ export default function AnnounceMessage({ id, author, createdAt, message, image,
 			</div>
 			<div className="mb-1 text-2xs">
 				<Tippy content={date.calendar()} offset={[0, 5]}>
-					<span className="text-white/40 text-2xs font-light">
+					<span className="text-black/50 dark:text-white/40 text-2xs font-light">
 						<FontAwesomeIcon icon={faClock} className="mr-1" />	
 						{ getFormattedDate() }
 					</span>
@@ -57,7 +57,7 @@ export default function AnnounceMessage({ id, author, createdAt, message, image,
 			</div>
 
 			{/* Message */}
-			<div className="text-white/80 font-light text-xs text-justify whitespace-pre-wrap">
+			<div className="text-gray-900 dark:text-white/80 font-light text-xs text-justify whitespace-pre-wrap">
 				{ message }
 			</div>
 
