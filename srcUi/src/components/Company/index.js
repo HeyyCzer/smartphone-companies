@@ -34,7 +34,7 @@ export default function Company({ id, name, type, avatar, isOpen }) {
 					{type} • {isOpen ? <span className="text-primary font-semibold">Aberto</span> : "Fechado"}
 				</span>
 
-				<button type="button" className="mt-auto mb-0 bg-gray-500 dark:bg-dark-5 rounded-lg text-[10px] text-white/80 hover:bg-primary hover:text-white transition-colors w-full py-0.5" onClick={markLocation}>
+				<button type="button" className="mt-auto mb-0 bg-gray-500 dark:bg-dark-5 rounded-lg text-[10px] text-white/80 hover:bg-primary dark:hover:bg-primary hover:text-white transition-colors w-full py-0.5" onClick={markLocation}>
 					<FontAwesomeIcon icon={faMapLocation} className="mr-2" />
 					Marcar localização
 				</button>
