@@ -15,6 +15,7 @@ vRP.Prepare("companyApp/jobs/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies
 vRP.Prepare("companyApp/bank/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies_banklogs` (`id` INT(11) NOT NULL AUTO_INCREMENT,`companyId` VARCHAR(50) NOT NULL COLLATE 'utf8_general_ci',`authorID` INT(11) NOT NULL,`action` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',`amount` INT(11) NOT NULL,`date` TIMESTAMP NOT NULL DEFAULT current_timestamp(),PRIMARY KEY (`id`) USING BTREE)")
 
 vRP.Prepare("companyApp/company/getAll", "SELECT * FROM heyy_companies")
+vRP.Prepare("companyApp/company/getOpen", "SELECT * FROM heyy_companies WHERE isOpen = 1")
 vRP.Prepare("companyApp/company/get", "SELECT * FROM heyy_companies WHERE id = @id")
 vRP.Prepare("companyApp/company/toggle", "UPDATE heyy_companies SET isOpen = NOT isOpen WHERE id = @id")
 vRP.Prepare("companyApp/announces/get", "SELECT * FROM heyy_companies_announces WHERE companyId = @companyId ORDER BY createdAt DESC")
@@ -34,6 +35,19 @@ Citizen.CreateThread(function()
 	vRP.Query("companyApp/announces/setup")
 	vRP.Query("companyApp/jobs/setup")
 	vRP.Query("companyApp/bank/setup")
+
+	-- Fechar lojas sozinhas se ninguém estiver trabalhando
+	while true do
+		Wait(60 * 1000) -- 60s
+		local results = vRP.Query("companyApp/company/getOpen", {}) or {}
+		for k, v in ipairs(results) do
+			local Users, Total = vRP.NumPermission(v.permission)
+			if Total <= 0 then
+				_warning("^3" .. v.name .. " ^0foi fechado(a) automaticamente por não ter ninguém trabalhando")
+				src.toggleStatus(v.id)
+			end
+		end
+	end
 end)
 
 function src.getCompanies()
@@ -99,9 +113,11 @@ function src.getJobs()
 	local jobs = vRP.Query("companyApp/jobs/get", {})
 	for k, v in ipairs(jobs) do
 		local identity = vRP.Identity(v.authorID)
+
 		v.author = identity.name .. " " .. identity.name2
 		v.phone = identity.phone
-		v.canDelete = (user_id == v.authorID)
+		v.isAuthor = (user_id == v.authorID)
+		v.isAdmin = vRP.HasGroup(user_id, "Admin", 1)
 	end
 	return jobs
 end
