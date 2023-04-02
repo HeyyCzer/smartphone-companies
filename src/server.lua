@@ -257,6 +257,6 @@ AddEventHandler('smartphone:isReady', function()
 	  	'companies', 
 	  	'Empresas', 
 	  	'https://cdn.discordapp.com/attachments/959206573350203462/1088146811887304804/image.png',
-	  	'nui://companies-app/src/nui/index.html'
+	  	'nui://' .. GetCurrentResourceName() .. '/src/nui/index.html'
 	)
 end)

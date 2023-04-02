@@ -7,7 +7,7 @@ const eventEmitter = new EventEmitter();
 export const isDevEnv = () => !window.invokeNative && process.env.NODE_ENV === "development";
 
 const getResourceName = () => {
-	if (window.GetCurrentResourceName) return window.GetCurrentResourceName();
+	if (window.GetParentResourceName) return window.GetParentResourceName();
 	return "companies-app";
 };
 
