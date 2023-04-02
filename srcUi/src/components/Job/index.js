@@ -51,7 +51,7 @@ export default function Job({ id, author, phone, description, createdAt, isAutho
 					</Tippy>
 				</span>
 
-				<span className="text-xs text-white/60 tracking-[1px] font-light mb-2"><span className="text-primary font-semibold">{ author }</span> está contratando</span>
+				<span className="text-xs text-black/60 dark:text-white/60 tracking-[1px] font-light mb-2"><span className="text-primary font-semibold">{ author }</span> está contratando</span>
 
 				{/* Description */}
 				<div className={`whitespace-pre-wrap font-light text-xs ${ description.length > 200 && "cursor-pointer"}`} onClick={toggleCollapsed}>

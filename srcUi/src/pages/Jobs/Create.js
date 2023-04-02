@@ -31,7 +31,7 @@ export default function JobsCreatePage() {
 			{/* Title */}
 			<h1 className="text-xs text-black/70 dark:text-white/70 py-4 text-center">Anunciar vaga</h1>
 
-			<form className="flex flex-col mx-3 my-2 text-2xs text-gray-300" onSubmit={handleSubmit(createJob)}>
+			<form className="flex flex-col mx-3 my-2 text-2xs text-gray-900 dark:text-gray-300" onSubmit={handleSubmit(createJob)}>
 				<div className="relative">
 					<TextareaAutosize
 						placeholder="Quem você está contratando? Do que você precisa? Dê uma descrição detalhada!"
