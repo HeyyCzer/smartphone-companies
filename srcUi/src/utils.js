@@ -7,8 +7,7 @@ const eventEmitter = new EventEmitter();
 export const isDevEnv = () => !window.invokeNative && process.env.NODE_ENV === "development";
 
 const getResourceName = () => {
-	if (window.GetParentResourceName) return window.GetParentResourceName();
-	return "companies-app";
+	return "smartphone-companies";
 };
 
 export function processRequest(action, data) {
