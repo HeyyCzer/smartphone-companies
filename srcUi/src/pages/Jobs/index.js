@@ -65,6 +65,7 @@ export default function JobsPage() {
 							author={job.author}
 							phone={job.phone}
 							description={job.description}
+							image={job.image}
 							createdAt={job.createdAt}
 							isAuthor={job.isAuthor}
 							canDelete={job.isAdmin || job.isAuthor}

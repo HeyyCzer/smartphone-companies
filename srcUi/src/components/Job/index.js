@@ -5,7 +5,7 @@ import moment from "moment";
 import { useState } from "react";
 import { Modal, axiosInstance, eventEmitter } from "../../utils";
 
-export default function Job({ id, author, phone, description, createdAt, isAuthor, canDelete }) {
+export default function Job({ id, author, phone, description, image, createdAt, isAuthor, canDelete }) {
 	const [collapsed, setCollapsed] = useState(description.length > 200);
 
 	const getFormattedDate = () => {
@@ -60,6 +60,10 @@ export default function Job({ id, author, phone, description, createdAt, isAutho
 						description
 					}
 				</div>
+
+				{ image &&
+					<img src={image} className="animate__animated animate__fadeIn animate__delay-1s mt-2 rounded-lg" alt="Announce message" />
+				}
 
 				{/* Send message */}
 				<div className="mt-2 text-white/80 w-full">

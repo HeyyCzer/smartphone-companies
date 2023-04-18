@@ -62,7 +62,7 @@ export default function AnnounceMessage({ id, author, createdAt, message, image,
 			</div>
 
 			{image &&
-				<img src={image} className="animate__animated animate__fadeIn animate__delay-1s mt-2" alt="Announce message" />
+				<img src={image} className="animate__animated animate__fadeIn animate__delay-1s mt-2 rounded-lg" alt="Announce message" />
 			}
 		</div>
 	)
