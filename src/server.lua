@@ -11,7 +11,7 @@ local Internal = {}
 
 vRP.Prepare("companyApp/company/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies` (`id` VARCHAR(50) NOT NULL COLLATE 'utf8_general_ci',`name` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',`type` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',`avatar` TEXT NOT NULL COLLATE 'latin1_swedish_ci',`permission` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',`balance` INT(11) NOT NULL DEFAULT '0',`location` LONGTEXT NOT NULL COLLATE 'utf8mb4_bin',`isOpen` TINYINT(4) NOT NULL DEFAULT '0',PRIMARY KEY (`id`) USING BTREE,CONSTRAINT `location` CHECK (json_valid(`location`)))")
 vRP.Prepare("companyApp/announces/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies_announces` (`id` INT(11) NOT NULL AUTO_INCREMENT,`companyId` VARCHAR(50) NOT NULL COLLATE 'utf8_general_ci',`authorID` INT(11) NOT NULL,`message` TEXT NOT NULL COLLATE 'latin1_swedish_ci',`image` TEXT NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',`createdAt` TIMESTAMP NOT NULL DEFAULT current_timestamp(),PRIMARY KEY (`id`) USING BTREE)")
-vRP.Prepare("companyApp/jobs/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies_jobs` (`id` INT(11) NOT NULL AUTO_INCREMENT,`authorID` INT(11) NOT NULL,`description` TEXT NOT NULL COLLATE 'latin1_swedish_ci',`image` TEXT NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',`createdAt` TIMESTAMP NOT NULL DEFAULT current_timestamp(),PRIMARY KEY (`id`) USING BTREE)")
+vRP.Prepare("companyApp/jobs/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies_jobs` (`id` INT(11) NOT NULL AUTO_INCREMENT,`authorID` INT(11) NOT NULL,`description` TEXT NOT NULL COLLATE 'latin1_swedish_ci',`image` TEXT NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',`phone` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',`createdAt` TIMESTAMP NOT NULL DEFAULT current_timestamp(),PRIMARY KEY (`id`) USING BTREE)")
 vRP.Prepare("companyApp/bank/setup", "CREATE TABLE IF NOT EXISTS `heyy_companies_banklogs` (`id` INT(11) NOT NULL AUTO_INCREMENT,`companyId` VARCHAR(50) NOT NULL COLLATE 'utf8_general_ci',`authorID` INT(11) NOT NULL,`action` VARCHAR(50) NOT NULL COLLATE 'latin1_swedish_ci',`amount` INT(11) NOT NULL,`date` TIMESTAMP NOT NULL DEFAULT current_timestamp(),PRIMARY KEY (`id`) USING BTREE)")
 
 vRP.Prepare("companyApp/company/getAll", "SELECT * FROM heyy_companies")
@@ -23,7 +23,7 @@ vRP.Prepare("companyApp/announces/new", "INSERT INTO heyy_companies_announces (c
 vRP.Prepare("companyApp/announces/delete", "DELETE FROM heyy_companies_announces WHERE id = @id")
 vRP.Prepare("companyApp/jobs/get", "SELECT * FROM heyy_companies_jobs WHERE createdAt >= DATE(NOW() - INTERVAL 2 DAY) ORDER BY createdAt DESC")
 vRP.Prepare("companyApp/jobs/contains", "SELECT * FROM heyy_companies_jobs WHERE authorID = @authorID AND createdAt >= DATE(NOW() - INTERVAL 2 DAY)")
-vRP.Prepare("companyApp/jobs/new", "INSERT INTO heyy_companies_jobs (authorID, description, image) VALUES (@authorID, @description, @image)")
+vRP.Prepare("companyApp/jobs/new", "INSERT INTO heyy_companies_jobs (authorID, description, image, phone) VALUES (@authorID, @description, @image, @phone)")
 vRP.Prepare("companyApp/jobs/delete", "DELETE FROM heyy_companies_jobs WHERE id = @id")
 vRP.Prepare("companyApp/bank/getLogs", "SELECT * FROM heyy_companies_banklogs WHERE companyId = @companyId ORDER BY date DESC LIMIT 25")
 vRP.Prepare("companyApp/bank/newLog", "INSERT INTO heyy_companies_banklogs (companyId, authorID, action, amount) VALUES (@companyId, @authorID, @action, @amount)")
@@ -111,11 +111,11 @@ function src.getJobs()
 	local user_id = vRP.Passport(source)
 	
 	local jobs = vRP.Query("companyApp/jobs/get", {})
-	for k, v in ipairs(jobs) do
+	for _, v in ipairs(jobs) do
 		local identity = vRP.Identity(v.authorID)
 
 		v.author = identity.name .. " " .. identity.name2
-		v.phone = identity.phone
+		v.formattedPhone = exports["lb-phone"]:FormatNumber(v.phone)
 		v.isAuthor = (user_id == v.authorID)
 		v.isAdmin = vRP.HasGroup(user_id, "Admin", 1)
 	end
@@ -125,9 +125,14 @@ end
 function src.createJob(description, image)
 	local user_id = vRP.Passport(source)
 
+	local phone = exports["lb-phone"]:GetEquippedPhoneNumber(source)
+	if not phone then
+		return { failed = "Não encontramos seu número de telefone" }
+	end
+
 	local results = vRP.Query("companyApp/jobs/contains", { authorID = user_id })
-	if #results <= 0 then
-		vRP.Query("companyApp/jobs/new", { authorID = user_id, description = description, image = image })
+    if #results <= 0 then
+		vRP.Query("companyApp/jobs/new", { authorID = user_id, description = description, image = image, phone = phone })
 		notify(-1, "Empresas", "Uma nova vaga de emprego está disponível")
 		return { success = true }
 	end
@@ -245,18 +250,9 @@ function Internal.getUserName(user_id)
 end
 
 function notify(target, title, subtitle)
-	TriggerClientEvent("smartphone:pusher", target, "CUSTOM_NOTIFY", {
-		app = "companies",
-		title = title,
-		subtitle = subtitle
+	exports["lb-phone"]:SendNotification(target, {
+		app = "companies-app", -- the app to send the notification to (optional)
+		title = title, -- the title of the notification
+		content = subtitle, -- the description of the notification
 	})
 end
-
-AddEventHandler('smartphone:isReady', function()
-	exports.smartphone:createApp(
-	  	'companies', 
-	  	'Empresas', 
-	  	'https://cdn.discordapp.com/attachments/959206573350203462/1088146811887304804/image.png',
-	  	'nui://' .. GetCurrentResourceName() .. '/src/nui/index.html'
-	)
-end)

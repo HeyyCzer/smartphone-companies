@@ -43,7 +43,7 @@ RegisterNUICallback("getJobs", function(data, callback)
 end)
 
 RegisterNUICallback("openWhatsapp", function(data, callback)
-	TriggerEvent("smartphone:pusher", "REDIRECT", "/whatsapp/" .. data.phone)
+	exports["lb-phone"]:SetContactModal(data.phone)
 	callback({ success = true })
 end)
 
@@ -66,4 +66,21 @@ end)
 
 RegisterNUICallback("depositMoney", function(data, callback)
 	callback(vSERVER.depositMoney(tonumber(data.value)))
+end)
+
+Citizen.CreateThread(function()
+	local added, errorMessage = exports["lb-phone"]:AddCustomApp({
+		identifier = "companies-app",
+		name = "Empresas",
+		description = "Entre em contato e gerencie sua empresa",
+        ui = GetCurrentResourceName() .. "/src/nui/index.html", -- this is the path to the HTML file,
+		developer = "HeyyCzer",
+		defaultApp = true,
+		size = 59812,
+		icon = "https://cdn.discordapp.com/attachments/959206573350203462/1088146811887304804/image.png", -- OPTIONAL app icon
+    })
+
+    if not added then
+        print("Erro ao adicionar aplicativo:", errorMessage)
+    end
 end)

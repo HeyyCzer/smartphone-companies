@@ -5,7 +5,7 @@ import moment from "moment";
 import { useState } from "react";
 import { Modal, axiosInstance, eventEmitter } from "../../utils";
 
-export default function Job({ id, author, phone, description, image, createdAt, isAuthor, canDelete }) {
+export default function Job({ id, author, phone, formattedPhone, description, image, createdAt, isAuthor, canDelete }) {
 	const [collapsed, setCollapsed] = useState(description.length > 200);
 
 	const getFormattedDate = () => {
@@ -43,7 +43,7 @@ export default function Job({ id, author, phone, description, image, createdAt, 
 	return (
 		<div className="animate__animated animate__slideInLeft bg-gray-100 dark:bg-dark-3 rounded-lg flex my-2">
 			<div className="my-2 mx-3 flex flex-col w-full">
-				<span className="text-[0.5rem] text-gray-500">
+				<span className="text-2xs text-gray-500">
 					<Tippy content={ moment(new Date(createdAt)).calendar() } className="text-xs" offset={[0, 5]}>
 						<span>
 							<FontAwesomeIcon icon={faClock} className="mr-1" /> { getFormattedDate() }
@@ -66,20 +66,20 @@ export default function Job({ id, author, phone, description, image, createdAt, 
 				}
 
 				{/* Send message */}
-				<div className="mt-2 text-white/80 w-full">
+				<div className="mt-2 text-white/80 w-full flex flex-col gap-y-2">
 					{ !isAuthor &&
 						<button
 							type="button"
-							className="bg-gray-500 dark:bg-dark-5 hover:bg-primary hover:text-white transition-colors rounded-lg text-[10px] text-white/80 w-full py-0.5"
+							className="bg-gray-500 dark:bg-dark-5 hover:bg-primary hover:text-white transition-colors rounded-lg text-xs text-white/80 w-full py-0.5"
 							onClick={openWhatsapp}
 						>
 							<FontAwesomeIcon icon={faMessage} className="mr-2" />
-							{ phone }
+							{ formattedPhone }
 						</button>
 					}
 					{
 						canDelete &&
-							<button type="button" className="bg-red-600/50 hover:bg-red-600 hover:text-white transition-colors rounded-lg text-[10px] text-white/80 w-full py-0.5" onClick={deleteJob}>
+							<button type="button" className="bg-red-600/50 hover:bg-red-600 hover:text-white transition-colors rounded-lg text-xs text-white/80 w-full py-0.5" onClick={deleteJob}>
 								<FontAwesomeIcon icon={faTrash} />
 							</button>
 					}

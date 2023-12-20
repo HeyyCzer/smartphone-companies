@@ -3,9 +3,17 @@ module.exports = {
 	darkMode: "class",
 	content: ["./src/**/*.{js,jsx,ts,tsx}"],
 	theme: {
+		fontSize: {
+			"2xs": "0.75rem",
+			"xs": "1rem",
+			"sm": "1.125rem",
+			"base": "1.25rem",
+			"xl": "1.4rem",
+			"2xl": "1.6rem",
+		},
 		extend: {
 			fontSize: {
-				"2xs": ["0.6rem", "none"],
+				"2xs": ["0.75rem", "none"],
 			},
 
 			colors: {

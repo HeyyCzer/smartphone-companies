@@ -74,7 +74,7 @@ export default function CompanyViewPage() {
 	return (
 		<App>
 			{/* Title */}
-			<div className="py-4 text-center">
+			<div className="pt-12 pb-4 text-center">
 				<h5 className="text-2xs text-black/50 dark:text-white/40 -mb-0.5">{ company.type }</h5>
 				<h1 className="text-xs text-black/70 dark:text-white/70">{ company.name }</h1>
 			</div>

@@ -7,8 +7,8 @@ export default function NavbarButton({ icon, name, to }) {
 	return (
 		<Link to={to}>
 			<div className={`text-center transition-colors ${selected ? "text-black dark:text-white" : "text-gray-500 dark:text-gray-400"}`}>
-				<FontAwesomeIcon fontSize={14} icon={icon} />
-				<p className="text-[9px]">{name}</p>
+				<FontAwesomeIcon className="text-xs" icon={icon} />
+				<p className="text-xs">{name}</p>
 			</div>
 		</Link>
 	)

@@ -29,7 +29,7 @@ export default function JobsCreatePage() {
 	return (
 		<App>
 			{/* Title */}
-			<h1 className="text-xs text-black/70 dark:text-white/70 py-4 text-center">Anunciar vaga</h1>
+			<h1 className="text-xs text-black/70 dark:text-white/70 pt-12 pb-4 text-center">Anunciar vaga</h1>
 
 			<form className="flex flex-col mx-3 my-2 text-2xs text-gray-900 dark:text-gray-300" onSubmit={handleSubmit(createJob)}>
 				<div className="relative">

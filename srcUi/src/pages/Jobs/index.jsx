@@ -54,7 +54,7 @@ export default function JobsPage() {
 	return (
 		<App>
 			{/* Title */}
-			<h1 className="text-xs text-black/70 dark:text-white/70 py-4 text-center">Vagas de Emprego</h1>
+			<h1 className="text-xs text-black/70 dark:text-white/70 pt-12 pb-4 text-center">Vagas de Emprego</h1>
 
 			{/* Jobs */}
 			<div className="mx-3">
@@ -64,6 +64,7 @@ export default function JobsPage() {
 							key={index} id={job.id}
 							author={job.author}
 							phone={job.phone}
+							formattedPhone={job.formattedPhone}
 							description={job.description}
 							image={job.image}
 							createdAt={job.createdAt}
@@ -75,8 +76,8 @@ export default function JobsPage() {
 			</div>
 
 			{/* Create new job */}
-			<Link to="/jobs/create" className="absolute bottom-16 right-4 py-[0.20rem] px-2 bg-primary text-white rounded-full text-center">
-				<FontAwesomeIcon icon={faPlus} />
+			<Link to="/jobs/create" className="absolute bottom-24 right-4 flex w-12 h-12 items-center justify-center bg-primary text-white rounded-full text-center">
+				<FontAwesomeIcon className="text-base" icon={faPlus} />
 			</Link>
 		</App>
 	)

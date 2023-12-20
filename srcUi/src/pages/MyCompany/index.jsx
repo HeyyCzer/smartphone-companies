@@ -125,7 +125,7 @@ export default function MyCompany() {
 	return (
 		<App>
 			{/* Title */}
-			<h1 className="text-xs text-black/70 dark:text-white/70 py-4 text-center">Gerenciar empresa</h1>
+			<h1 className="text-xs text-black/70 dark:text-white/70 pt-12 pb-4 text-center">Gerenciar empresa</h1>
 
 			<div className="mx-3">
 				{/* Bank */}
