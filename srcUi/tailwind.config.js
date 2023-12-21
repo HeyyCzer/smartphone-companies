@@ -4,7 +4,6 @@ module.exports = {
 	content: ["./src/**/*.{js,jsx,ts,tsx}"],
 	theme: {
 		fontSize: {
-			"2xs": "0.75rem",
 			"xs": "1rem",
 			"sm": "1.125rem",
 			"base": "1.25rem",
@@ -13,7 +12,7 @@ module.exports = {
 		},
 		extend: {
 			fontSize: {
-				"2xs": ["0.75rem", "none"],
+				"2xs": ["0.92rem", "none"],
 			},
 
 			colors: {

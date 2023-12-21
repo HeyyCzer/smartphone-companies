@@ -12,7 +12,9 @@ body,
 } */
 
 body {
-	-webkit-font-smoothing: antialiased;
+	transform: perspective(1px) translateZ(0);
+	backface-visibility: hidden;
+	-webkit-font-smoothing: subpixel-antialiased;
 }
 
 #app {
